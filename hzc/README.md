@@ -25,12 +25,12 @@
 ### 方法一：独立安装
 一键安装命令：
 ```bash
-curl -fsSL https://raw.githubusercontent.com/qinastar/servertools/main/hzc/install_qb_monitor.sh | sudo bash
+curl -fsSL https://raw.githubusercontent.com/qinastar/servertools/refs/heads/main/hzc/install_qb_monitor.sh | sudo bash
 ```
 
 或者使用wget：
 ```bash
-wget -qO- https://raw.githubusercontent.com/qinastar/servertools/main/hzc/install_qb_monitor.sh | sudo bash
+wget -qO- https://raw.githubusercontent.com/qinastar/servertools/refs/heads/main/hzc/install_qb_monitor.sh | sudo bash
 ```
 
 ### 方法二：通过NC_QB438.sh安装
