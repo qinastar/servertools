@@ -65,24 +65,39 @@ else
         log_entry="[\$current_time] 错误: 接收到无效的JSON数据"
     else
         # 获取各项数据
+        connection_status=\$(echo \$response | jq -r '.connection_status')
         uploaded=\$(echo \$response | jq -r '.up_info_data')
         up_speed=\$(echo \$response | jq -r '.up_info_speed')
+        downloaded=\$(echo \$response | jq -r '.dl_info_data')
+        dl_speed=\$(echo \$response | jq -r '.dl_info_speed')
         
-        # 转换字节为TB和MB/s
-        uploaded_tb=\$(echo "scale=3; \$uploaded/1024/1024/1024/1024" | bc)
-        up_speed_mb=\$(echo "scale=2; \$up_speed/1024/1024" | bc)
-        
-        # 创建新的日志条目
-        log_entry="[\$current_time] 状态: 已连接 | 上传量: \${uploaded_tb}TB | 上传速度: \${up_speed_mb}MB/s"
-        
-        # 19TB转换为字节 (19 * 1024 * 1024 * 1024 * 1024)
-        limit=20889931046912
-        
-        # 检查是否超过19TB
-        if [ "\$uploaded" -gt "\$limit" ]; then
-            log_entry="[\$current_time] 警告: 上传量(\${uploaded_tb}TB)超过19TB限制，系统将关机"
-            echo "\$log_entry" >> "\$LOG_FILE"
-            shutdown -h now
+        # 检查数据是否为null或无效
+        if [ "\$uploaded" = "null" ] || [ "\$up_speed" = "null" ]; then
+            log_entry="[\$current_time] 错误: API返回null值 (uploaded: \$uploaded, speed: \$up_speed)"
+        else
+            # 使用awk进行浮点数计算
+            uploaded_tb=\$(awk "BEGIN {printf \"%.3f\", \$uploaded/1024/1024/1024/1024}")
+            up_speed_mb=\$(awk "BEGIN {printf \"%.2f\", \$up_speed/1024/1024}")
+            downloaded_tb=\$(awk "BEGIN {printf \"%.3f\", \$downloaded/1024/1024/1024/1024}")
+            dl_speed_mb=\$(awk "BEGIN {printf \"%.2f\", \$dl_speed/1024/1024}")
+            
+            # 检查转换是否成功
+            if [ \$? -ne 0 ] || [ -z "\$uploaded_tb" ] || [ -z "\$up_speed_mb" ]; then
+                log_entry="[\$current_time] 错误: 数据转换失败 (原始数据 - uploaded: \$uploaded bytes, speed: \$up_speed bytes/s)"
+            else
+                # 创建新的日志条目
+                log_entry="[\$current_time] 状态: \$connection_status | ⬆️ 上传: \${uploaded_tb}TB (\${up_speed_mb}MB/s) | ⬇️ 下载: \${downloaded_tb}TB (\${dl_speed_mb}MB/s)"
+                
+                # 19TB转换为字节 (19 * 1024 * 1024 * 1024 * 1024)
+                limit=20889931046912
+                
+                # 检查是否超过19TB
+                if [ "\$uploaded" -gt "\$limit" ]; then
+                    log_entry="[\$current_time] ⚠️ 警告: 上传量(\${uploaded_tb}TB)超过19TB限制，系统将关机"
+                    echo "\$log_entry" >> "\$LOG_FILE"
+                    shutdown -h now
+                fi
+            fi
         fi
     fi
 fi
