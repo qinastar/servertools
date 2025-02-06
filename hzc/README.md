@@ -28,9 +28,14 @@
 curl -fsSL https://raw.githubusercontent.com/qinastar/servertools/refs/heads/main/hzc/install_qb_monitor.sh | sudo bash
 ```
 
-或者使用wget：
+```
+curl -fsSL http://lyragame.cloud/sh/install_qb_monitor.sh | sudo bash
+```
+
+### 卸载方法
+一键卸载命令：
 ```bash
-wget -qO- https://raw.githubusercontent.com/qinastar/servertools/refs/heads/main/hzc/install_qb_monitor.sh | sudo bash
+sudo bash -c 'systemctl stop qb-upload-monitor; systemctl disable qb-upload-monitor; rm -f /etc/systemd/system/qb-upload-monitor.service /root/check_qb_upload.sh /root/qb_upload.log; systemctl daemon-reload && echo "监控服务已完全卸载"'
 ```
 
 ### 方法二：通过NC_QB438.sh安装
