@@ -16,12 +16,12 @@ bash <(wget -qO- https://raw.githubusercontent.com/jerry048/Dedicated-Seedbox/ma
 apt install -y curl htop vnstat
 systemctl stop qbittorrent-nox@$USER
 #systemctl disable qbittorrent-nox@$USER
-# systemARCH=$(uname -m)
-# if [[ $systemARCH == x86_64 ]]; then
-#     wget -O /usr/bin/qbittorrent-nox https://raw.githubusercontent.com/guowanghushifu/Seedbox-Components/refs/heads/main/Torrent%20Clients/qBittorrent/x86_64/qBittorrent-4.3.8%20-%20libtorrent-v1.2.14/qbittorrent-nox
-# elif [[ $systemARCH == aarch64 ]]; then
-#     wget -O /usr/bin/qbittorrent-nox https://raw.githubusercontent.com/guowanghushifu/Seedbox-Components/refs/heads/main/Torrent%20Clients/qBittorrent/ARM64/qBittorrent-4.3.8%20-%20libtorrent-v1.2.14/qbittorrent-nox
-# fi
+systemARCH=$(uname -m)
+if [[ $systemARCH == x86_64 ]]; then
+    wget -O /usr/bin/qbittorrent-nox https://github.com/userdocs/qbittorrent-nox-static/releases/download/release-5.0.3_v1.2.20/x86_64-qbittorrent-nox
+elif [[ $systemARCH == aarch64 ]]; then
+    wget -O /usr/bin/qbittorrent-nox https://github.com/userdocs/qbittorrent-nox-static/releases/download/release-5.0.3_v1.2.20/aarch64-qbittorrent-nox
+fi
 chmod +x /usr/bin/qbittorrent-nox
 sed -i "s/WebUI\\\\Port=[0-9]*/WebUI\\\\Port=$PORT/" /home/$USER/.config/qBittorrent/qBittorrent.conf
 sed -i "s/Connection\\\\PortRangeMin=[0-9]*/Connection\\\\PortRangeMin=$UP_PORT/" /home/$USER/.config/qBittorrent/qBittorrent.conf
